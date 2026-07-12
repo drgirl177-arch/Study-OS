@@ -1,0 +1,27 @@
+kind = "web"
+previewPath = "/"
+title = "GROFO"
+version = "1.0.0"
+id = "artifacts/grofo"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 25889
+
+[services.development]
+run = "pnpm --filter @workspace/grofo run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/grofo", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/grofo/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "25889"
+BASE_PATH = "/"
