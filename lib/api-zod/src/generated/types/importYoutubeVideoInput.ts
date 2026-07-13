@@ -8,8 +8,12 @@
 import type { VideoCategory } from './videoCategory';
 import type { VideoType } from './videoType';
 
-export type ListVideosParams = {
-category?: VideoCategory;
-type?: VideoType;
-search?: string;
-};
+export interface ImportYoutubeVideoInput {
+  youtubeId: string;
+  title: string;
+  channel: string;
+  durationSeconds: number;
+  thumbnailUrl: string;
+  type: VideoType;
+  category?: VideoCategory;
+}

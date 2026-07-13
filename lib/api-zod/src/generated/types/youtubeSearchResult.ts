@@ -5,16 +5,11 @@
  * GROFO API specification
  * OpenAPI spec version: 0.1.0
  */
-import type { VideoCategory } from './videoCategory';
-import type { VideoType } from './videoType';
 
-export interface Video {
-  id: number;
+export interface YoutubeSearchResult {
   youtubeId: string;
   title: string;
   channel: string;
-  category: VideoCategory;
-  type: VideoType;
   durationSeconds: number;
   thumbnailUrl: string;
 }

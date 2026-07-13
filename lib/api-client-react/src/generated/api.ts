@@ -32,6 +32,7 @@ import type {
   DailyStudyMinutes,
   DashboardSummary,
   HealthStatus,
+  ImportYoutubeVideoInput,
   ListMaterialsParams,
   ListNotesParams,
   ListTasksParams,
@@ -52,6 +53,7 @@ import type {
   PlaylistItemInput,
   Profile,
   ProfileUpdate,
+  SearchYoutubeVideosParams,
   StudySession,
   StudySessionInput,
   Task,
@@ -59,7 +61,8 @@ import type {
   TaskUpdate,
   Video,
   WorkspaceLayout,
-  WorkspaceLayoutInput
+  WorkspaceLayoutInput,
+  YoutubeSearchResult
 } from './api.schemas';
 
 import { customFetch } from '../custom-fetch';
@@ -921,6 +924,161 @@ export function useListVideos<TData = Awaited<ReturnType<typeof listVideos>>, TE
 
 
 
+
+export const getSearchYoutubeVideosUrl = (params: SearchYoutubeVideosParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/videos/youtube-search?${stringifiedParams}` : `/api/videos/youtube-search`
+}
+
+/**
+ * @summary Dynamically search YouTube for videos (not limited to the local catalog)
+ */
+export const searchYoutubeVideos = async (params: SearchYoutubeVideosParams, options?: RequestInit): Promise<YoutubeSearchResult[]> => {
+
+  return customFetch<YoutubeSearchResult[]>(getSearchYoutubeVideosUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getSearchYoutubeVideosQueryKey = (params?: SearchYoutubeVideosParams,) => {
+    return [
+    `/api/videos/youtube-search`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getSearchYoutubeVideosQueryOptions = <TData = Awaited<ReturnType<typeof searchYoutubeVideos>>, TError = ErrorType<unknown>>(params: SearchYoutubeVideosParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof searchYoutubeVideos>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getSearchYoutubeVideosQueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof searchYoutubeVideos>>> = ({ signal }) => searchYoutubeVideos(params, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof searchYoutubeVideos>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type SearchYoutubeVideosQueryResult = NonNullable<Awaited<ReturnType<typeof searchYoutubeVideos>>>
+export type SearchYoutubeVideosQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Dynamically search YouTube for videos (not limited to the local catalog)
+ */
+
+export function useSearchYoutubeVideos<TData = Awaited<ReturnType<typeof searchYoutubeVideos>>, TError = ErrorType<unknown>>(
+ params: SearchYoutubeVideosParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof searchYoutubeVideos>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getSearchYoutubeVideosQueryOptions(params,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getImportYoutubeVideoUrl = () => {
+
+
+
+
+  return `/api/videos/import`
+}
+
+/**
+ * @summary Save a YouTube search result into the catalog (upsert by youtubeId) and return the local Video
+ */
+export const importYoutubeVideo = async (importYoutubeVideoInput: ImportYoutubeVideoInput, options?: RequestInit): Promise<Video> => {
+
+  return customFetch<Video>(getImportYoutubeVideoUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(importYoutubeVideoInput)
+  }
+);}
+
+
+
+
+
+export const getImportYoutubeVideoMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof importYoutubeVideo>>, TError,{data: BodyType<ImportYoutubeVideoInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof importYoutubeVideo>>, TError,{data: BodyType<ImportYoutubeVideoInput>}, TContext> => {
+
+const mutationKey = ['importYoutubeVideo'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof importYoutubeVideo>>, {data: BodyType<ImportYoutubeVideoInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  importYoutubeVideo(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ImportYoutubeVideoMutationResult = NonNullable<Awaited<ReturnType<typeof importYoutubeVideo>>>
+    export type ImportYoutubeVideoMutationBody = BodyType<ImportYoutubeVideoInput>
+    export type ImportYoutubeVideoMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Save a YouTube search result into the catalog (upsert by youtubeId) and return the local Video
+ */
+export const useImportYoutubeVideo = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof importYoutubeVideo>>, TError,{data: BodyType<ImportYoutubeVideoInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof importYoutubeVideo>>,
+        TError,
+        {data: BodyType<ImportYoutubeVideoInput>},
+        TContext
+      > => {
+      return useMutation(getImportYoutubeVideoMutationOptions(options));
+    }
 
 export const getGetVideoUrl = (id: number,) => {
 

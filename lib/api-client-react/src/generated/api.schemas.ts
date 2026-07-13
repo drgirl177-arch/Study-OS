@@ -24,6 +24,33 @@ export const VideoCategory = {
   Languages: 'Languages',
 } as const;
 
+export type VideoType = typeof VideoType[keyof typeof VideoType];
+
+
+export const VideoType = {
+  educational: 'educational',
+  motivation: 'motivation',
+  music: 'music',
+} as const;
+
+export interface YoutubeSearchResult {
+  youtubeId: string;
+  title: string;
+  channel: string;
+  durationSeconds: number;
+  thumbnailUrl: string;
+}
+
+export interface ImportYoutubeVideoInput {
+  youtubeId: string;
+  title: string;
+  channel: string;
+  durationSeconds: number;
+  thumbnailUrl: string;
+  type: VideoType;
+  category?: VideoCategory;
+}
+
 export type TaskPriority = typeof TaskPriority[keyof typeof TaskPriority];
 
 
@@ -59,6 +86,7 @@ export interface Video {
   title: string;
   channel: string;
   category: VideoCategory;
+  type: VideoType;
   durationSeconds: number;
   thumbnailUrl: string;
 }
@@ -340,7 +368,13 @@ endDate?: string;
 
 export type ListVideosParams = {
 category?: VideoCategory;
+type?: VideoType;
 search?: string;
+};
+
+export type SearchYoutubeVideosParams = {
+q: string;
+type?: VideoType;
 };
 
 export type ListNotesParams = {

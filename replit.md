@@ -41,6 +41,8 @@ A personal Learning Operating System for Indian competitive-exam students (NEET,
 - Streaks are computed on the fly from the `study_sessions` log (`computeStreaks` in `src/lib/streak.ts`), not stored — avoids drift between stored streak counters and actual session history.
 - Achievements are computed on the fly from existing tables (sessions, tasks, notes, playlists) rather than stored — no achievements table, no risk of stale "achieved" flags.
 - Video catalog and PDF materials are curated/seeded, not user-uploaded — v0.1 has no object storage/upload pipeline.
+- `videos.type` (`educational` | `motivation` | `music`) splits the Learn page into three tabs while keeping one shared catalog table (bookmarks/continue-watching/playlists keep working across all three). `category` stays as the subject filter, only meaningful for `educational`.
+- Learn also supports live YouTube search (`GET /videos/youtube-search`, server-side via `YOUTUBE_API_KEY` so the key never reaches the browser) alongside the local catalog. Picking a live result calls `POST /videos/import` to upsert it into `videos` (by `youtubeId`) before opening it, so the rest of the app only ever deals with local video ids.
 - Workspace split-screen layout preference is keyed by a client-generated `contextKey` string (e.g. `video:12`, `material:5`) rather than a foreign key, since the same layout system spans videos, PDFs, notes, and AI chat.
 
 ## Product

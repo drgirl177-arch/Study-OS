@@ -213,6 +213,10 @@ paths:
           in: query
           schema:
             $ref: "#/components/schemas/VideoCategory"
+        - name: type
+          in: query
+          schema:
+            $ref: "#/components/schemas/VideoType"
         - name: search
           in: query
           schema:
@@ -226,6 +230,50 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/Video"
+
+  /videos/youtube-search:
+    get:
+      operationId: searchYoutubeVideos
+      tags: [videos]
+      summary: Dynamically search YouTube for videos (not limited to the local catalog)
+      parameters:
+        - name: q
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: type
+          in: query
+          schema:
+            $ref: "#/components/schemas/VideoType"
+      responses:
+        "200":
+          description: YouTube search results
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/YoutubeSearchResult"
+
+  /videos/import:
+    post:
+      operationId: importYoutubeVideo
+      tags: [videos]
+      summary: Save a YouTube search result into the catalog (upsert by youtubeId) and return the local Video
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ImportYoutubeVideoInput"
+      responses:
+        "200":
+          description: Imported/existing video
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Video"
 
   /videos/{id}:
     parameters:
@@ -884,6 +932,44 @@ components:
       type: string
       enum: [NEET, JEE, CLAT, UPSC, Languages]
 
+    VideoType:
+      type: string
+      enum: [educational, motivation, music]
+
+    YoutubeSearchResult:
+      type: object
+      required: [youtubeId, title, channel, durationSeconds, thumbnailUrl]
+      properties:
+        youtubeId:
+          type: string
+        title:
+          type: string
+        channel:
+          type: string
+        durationSeconds:
+          type: integer
+        thumbnailUrl:
+          type: string
+
+    ImportYoutubeVideoInput:
+      type: object
+      required: [youtubeId, title, channel, durationSeconds, thumbnailUrl, type]
+      properties:
+        youtubeId:
+          type: string
+        title:
+          type: string
+        channel:
+          type: string
+        durationSeconds:
+          type: integer
+        thumbnailUrl:
+          type: string
+        type:
+          $ref: "#/components/schemas/VideoType"
+        category:
+          $ref: "#/components/schemas/VideoCategory"
+
     TaskPriority:
       type: string
       enum: [low, medium, high]
@@ -1055,6 +1141,7 @@ components:
         - title
         - channel
         - category
+        - type
         - durationSeconds
         - thumbnailUrl
       properties:
@@ -1068,6 +1155,8 @@ components:
           type: string
         category:
           $ref: "#/components/schemas/VideoCategory"
+        type:
+          $ref: "#/components/schemas/VideoType"
         durationSeconds:
           type: integer
         thumbnailUrl:

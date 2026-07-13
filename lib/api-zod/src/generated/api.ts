@@ -70,6 +70,7 @@ export const GetDashboardSummaryResponse = zod.object({
   "title": zod.string(),
   "channel": zod.string(),
   "category": zod.enum(['NEET', 'JEE', 'CLAT', 'UPSC', 'Languages']),
+  "type": zod.enum(['educational', 'motivation', 'music']),
   "durationSeconds": zod.number(),
   "thumbnailUrl": zod.string()
 }),
@@ -195,6 +196,7 @@ export const GetWeeklyStudySessionsResponse = zod.array(GetWeeklyStudySessionsRe
  */
 export const ListVideosQueryParams = zod.object({
   "category": zod.enum(['NEET', 'JEE', 'CLAT', 'UPSC', 'Languages']).optional(),
+  "type": zod.enum(['educational', 'motivation', 'music']).optional(),
   "search": zod.coerce.string().optional()
 })
 
@@ -204,10 +206,54 @@ export const ListVideosResponseItem = zod.object({
   "title": zod.string(),
   "channel": zod.string(),
   "category": zod.enum(['NEET', 'JEE', 'CLAT', 'UPSC', 'Languages']),
+  "type": zod.enum(['educational', 'motivation', 'music']),
   "durationSeconds": zod.number(),
   "thumbnailUrl": zod.string()
 })
 export const ListVideosResponse = zod.array(ListVideosResponseItem)
+
+
+/**
+ * @summary Dynamically search YouTube for videos (not limited to the local catalog)
+ */
+export const SearchYoutubeVideosQueryParams = zod.object({
+  "q": zod.coerce.string(),
+  "type": zod.enum(['educational', 'motivation', 'music']).optional()
+})
+
+export const SearchYoutubeVideosResponseItem = zod.object({
+  "youtubeId": zod.string(),
+  "title": zod.string(),
+  "channel": zod.string(),
+  "durationSeconds": zod.number(),
+  "thumbnailUrl": zod.string()
+})
+export const SearchYoutubeVideosResponse = zod.array(SearchYoutubeVideosResponseItem)
+
+
+/**
+ * @summary Save a YouTube search result into the catalog (upsert by youtubeId) and return the local Video
+ */
+export const ImportYoutubeVideoBody = zod.object({
+  "youtubeId": zod.string(),
+  "title": zod.string(),
+  "channel": zod.string(),
+  "durationSeconds": zod.number(),
+  "thumbnailUrl": zod.string(),
+  "type": zod.enum(['educational', 'motivation', 'music']),
+  "category": zod.enum(['NEET', 'JEE', 'CLAT', 'UPSC', 'Languages']).optional()
+})
+
+export const ImportYoutubeVideoResponse = zod.object({
+  "id": zod.number(),
+  "youtubeId": zod.string(),
+  "title": zod.string(),
+  "channel": zod.string(),
+  "category": zod.enum(['NEET', 'JEE', 'CLAT', 'UPSC', 'Languages']),
+  "type": zod.enum(['educational', 'motivation', 'music']),
+  "durationSeconds": zod.number(),
+  "thumbnailUrl": zod.string()
+})
 
 
 /**
@@ -223,6 +269,7 @@ export const GetVideoResponse = zod.object({
   "title": zod.string(),
   "channel": zod.string(),
   "category": zod.enum(['NEET', 'JEE', 'CLAT', 'UPSC', 'Languages']),
+  "type": zod.enum(['educational', 'motivation', 'music']),
   "durationSeconds": zod.number(),
   "thumbnailUrl": zod.string()
 })
@@ -239,6 +286,7 @@ export const ListContinueWatchingResponseItem = zod.object({
   "title": zod.string(),
   "channel": zod.string(),
   "category": zod.enum(['NEET', 'JEE', 'CLAT', 'UPSC', 'Languages']),
+  "type": zod.enum(['educational', 'motivation', 'music']),
   "durationSeconds": zod.number(),
   "thumbnailUrl": zod.string()
 }),
@@ -271,6 +319,7 @@ export const UpsertContinueWatchingResponse = zod.object({
   "title": zod.string(),
   "channel": zod.string(),
   "category": zod.enum(['NEET', 'JEE', 'CLAT', 'UPSC', 'Languages']),
+  "type": zod.enum(['educational', 'motivation', 'music']),
   "durationSeconds": zod.number(),
   "thumbnailUrl": zod.string()
 }),
@@ -288,6 +337,7 @@ export const ListBookmarksResponseItem = zod.object({
   "title": zod.string(),
   "channel": zod.string(),
   "category": zod.enum(['NEET', 'JEE', 'CLAT', 'UPSC', 'Languages']),
+  "type": zod.enum(['educational', 'motivation', 'music']),
   "durationSeconds": zod.number(),
   "thumbnailUrl": zod.string()
 })
@@ -307,6 +357,7 @@ export const CreateBookmarkResponse = zod.object({
   "title": zod.string(),
   "channel": zod.string(),
   "category": zod.enum(['NEET', 'JEE', 'CLAT', 'UPSC', 'Languages']),
+  "type": zod.enum(['educational', 'motivation', 'music']),
   "durationSeconds": zod.number(),
   "thumbnailUrl": zod.string()
 })
@@ -369,6 +420,7 @@ export const GetPlaylistResponse = zod.object({
   "title": zod.string(),
   "channel": zod.string(),
   "category": zod.enum(['NEET', 'JEE', 'CLAT', 'UPSC', 'Languages']),
+  "type": zod.enum(['educational', 'motivation', 'music']),
   "durationSeconds": zod.number(),
   "thumbnailUrl": zod.string()
 }))
@@ -406,6 +458,7 @@ export const AddPlaylistItemResponse = zod.object({
   "title": zod.string(),
   "channel": zod.string(),
   "category": zod.enum(['NEET', 'JEE', 'CLAT', 'UPSC', 'Languages']),
+  "type": zod.enum(['educational', 'motivation', 'music']),
   "durationSeconds": zod.number(),
   "thumbnailUrl": zod.string()
 }))

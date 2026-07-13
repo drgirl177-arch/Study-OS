@@ -5,11 +5,9 @@
  * GROFO API specification
  * OpenAPI spec version: 0.1.0
  */
-import type { VideoCategory } from './videoCategory';
 import type { VideoType } from './videoType';
 
-export type ListVideosParams = {
-category?: VideoCategory;
+export type SearchYoutubeVideosParams = {
+q: string;
 type?: VideoType;
-search?: string;
 };
