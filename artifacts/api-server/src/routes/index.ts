@@ -1,8 +1,34 @@
 import { Router, type IRouter } from "express";
 import healthRouter from "./health";
+import profileRouter from "./profile";
+import dashboardRouter from "./dashboard";
+import tasksRouter from "./tasks";
+import studySessionsRouter from "./studySessions";
+import videosRouter from "./videos";
+import continueWatchingRouter from "./continueWatching";
+import bookmarksRouter from "./bookmarks";
+import playlistsRouter from "./playlists";
+import notesRouter from "./notes";
+import materialsRouter from "./materials";
+import workspaceLayoutRouter from "./workspaceLayout";
+import aiRouter from "./ai";
+import achievementsRouter from "./achievements";
 
 const router: IRouter = Router();
 
 router.use(healthRouter);
+router.use(profileRouter);
+router.use(dashboardRouter);
+router.use(tasksRouter);
+router.use(studySessionsRouter);
+router.use(videosRouter);
+router.use(continueWatchingRouter);
+router.use(bookmarksRouter);
+router.use(playlistsRouter);
+router.use(notesRouter);
+router.use(materialsRouter);
+router.use(workspaceLayoutRouter);
+router.use(aiRouter);
+router.use(achievementsRouter);
 
 export default router;

@@ -3,13 +3,39 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: GROFO API specification
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: profile
+    description: User profile
+  - name: dashboard
+    description: Home dashboard aggregates
+  - name: tasks
+    description: Planner tasks
+  - name: study-sessions
+    description: Study time / Pomodoro logging
+  - name: videos
+    description: Video catalog
+  - name: continue-watching
+    description: Continue watching progress
+  - name: bookmarks
+    description: Video bookmarks
+  - name: playlists
+    description: Video playlists
+  - name: notes
+    description: Notes and folders
+  - name: materials
+    description: PDF study materials
+  - name: workspace
+    description: Study workspace saved layouts
+  - name: ai
+    description: AI Sensei chat
+  - name: achievements
+    description: Achievements
 paths:
   /healthz:
     get:
@@ -24,6 +50,819 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /profile:
+    get:
+      operationId: getProfile
+      tags: [profile]
+      summary: Get current user's profile (JIT-created on first call)
+      responses:
+        "200":
+          description: Profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Profile"
+    patch:
+      operationId: updateProfile
+      tags: [profile]
+      summary: Update current user's profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProfileUpdate"
+      responses:
+        "200":
+          description: Updated profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Profile"
+
+  /dashboard/summary:
+    get:
+      operationId: getDashboardSummary
+      tags: [dashboard]
+      summary: Aggregated data for the Home screen
+      responses:
+        "200":
+          description: Dashboard summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardSummary"
+
+  /tasks:
+    get:
+      operationId: listTasks
+      tags: [tasks]
+      summary: List tasks, optionally filtered by date range
+      parameters:
+        - name: startDate
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: endDate
+          in: query
+          schema:
+            type: string
+            format: date
+      responses:
+        "200":
+          description: Tasks
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Task"
+    post:
+      operationId: createTask
+      tags: [tasks]
+      summary: Create a task
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TaskInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+
+  /tasks/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+    patch:
+      operationId: updateTask
+      tags: [tasks]
+      summary: Update a task
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TaskUpdate"
+      responses:
+        "200":
+          description: Updated task
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+    delete:
+      operationId: deleteTask
+      tags: [tasks]
+      summary: Delete a task
+      responses:
+        "204":
+          description: Deleted
+
+  /study-sessions:
+    post:
+      operationId: createStudySession
+      tags: [study-sessions]
+      summary: Log a completed study session (manual timer or Pomodoro)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StudySessionInput"
+      responses:
+        "201":
+          description: Logged
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StudySession"
+
+  /study-sessions/weekly:
+    get:
+      operationId: getWeeklyStudySessions
+      tags: [study-sessions]
+      summary: Minutes studied per day for the last 7 days
+      responses:
+        "200":
+          description: Weekly study minutes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DailyStudyMinutes"
+
+  /videos:
+    get:
+      operationId: listVideos
+      tags: [videos]
+      summary: Browse the video catalog
+      parameters:
+        - name: category
+          in: query
+          schema:
+            $ref: "#/components/schemas/VideoCategory"
+        - name: search
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Videos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Video"
+
+  /videos/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+    get:
+      operationId: getVideo
+      tags: [videos]
+      summary: Get a single video
+      responses:
+        "200":
+          description: Video
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Video"
+
+  /continue-watching:
+    get:
+      operationId: listContinueWatching
+      tags: [continue-watching]
+      summary: Videos the user is partway through, most recent first
+      responses:
+        "200":
+          description: Continue watching items
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ContinueWatchingItem"
+
+  /continue-watching/{videoId}:
+    parameters:
+      - name: videoId
+        in: path
+        required: true
+        schema:
+          type: integer
+    put:
+      operationId: upsertContinueWatching
+      tags: [continue-watching]
+      summary: Save/update watch progress for a video
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ContinueWatchingInput"
+      responses:
+        "200":
+          description: Saved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContinueWatchingItem"
+
+  /bookmarks:
+    get:
+      operationId: listBookmarks
+      tags: [bookmarks]
+      summary: List bookmarked videos
+      responses:
+        "200":
+          description: Bookmarked videos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Video"
+    post:
+      operationId: createBookmark
+      tags: [bookmarks]
+      summary: Bookmark a video
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BookmarkInput"
+      responses:
+        "201":
+          description: Bookmarked
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Video"
+
+  /bookmarks/{videoId}:
+    parameters:
+      - name: videoId
+        in: path
+        required: true
+        schema:
+          type: integer
+    delete:
+      operationId: deleteBookmark
+      tags: [bookmarks]
+      summary: Remove a video bookmark
+      responses:
+        "204":
+          description: Deleted
+
+  /playlists:
+    get:
+      operationId: listPlaylists
+      tags: [playlists]
+      summary: List the user's playlists
+      responses:
+        "200":
+          description: Playlists
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Playlist"
+    post:
+      operationId: createPlaylist
+      tags: [playlists]
+      summary: Create a playlist
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PlaylistInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Playlist"
+
+  /playlists/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+    get:
+      operationId: getPlaylist
+      tags: [playlists]
+      summary: Get a playlist with its videos
+      responses:
+        "200":
+          description: Playlist detail
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PlaylistDetail"
+    delete:
+      operationId: deletePlaylist
+      tags: [playlists]
+      summary: Delete a playlist
+      responses:
+        "204":
+          description: Deleted
+
+  /playlists/{id}/items:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+    post:
+      operationId: addPlaylistItem
+      tags: [playlists]
+      summary: Add a video to a playlist
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PlaylistItemInput"
+      responses:
+        "201":
+          description: Playlist detail
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PlaylistDetail"
+
+  /playlists/{id}/items/{videoId}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: videoId
+        in: path
+        required: true
+        schema:
+          type: integer
+    delete:
+      operationId: removePlaylistItem
+      tags: [playlists]
+      summary: Remove a video from a playlist
+      responses:
+        "204":
+          description: Deleted
+
+  /note-folders:
+    get:
+      operationId: listNoteFolders
+      tags: [notes]
+      summary: List note folders
+      responses:
+        "200":
+          description: Note folders
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/NoteFolder"
+    post:
+      operationId: createNoteFolder
+      tags: [notes]
+      summary: Create a note folder
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NoteFolderInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NoteFolder"
+
+  /note-folders/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+    delete:
+      operationId: deleteNoteFolder
+      tags: [notes]
+      summary: Delete a note folder (notes inside become unfiled)
+      responses:
+        "204":
+          description: Deleted
+
+  /notes:
+    get:
+      operationId: listNotes
+      tags: [notes]
+      summary: List notes, optionally filtered
+      parameters:
+        - name: folderId
+          in: query
+          schema:
+            type: integer
+        - name: search
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Notes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Note"
+    post:
+      operationId: createNote
+      tags: [notes]
+      summary: Create a note
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NoteInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Note"
+
+  /notes/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+    get:
+      operationId: getNote
+      tags: [notes]
+      summary: Get a note
+      responses:
+        "200":
+          description: Note
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Note"
+    patch:
+      operationId: updateNote
+      tags: [notes]
+      summary: Update a note (used for autosave)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NoteUpdate"
+      responses:
+        "200":
+          description: Updated note
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Note"
+    delete:
+      operationId: deleteNote
+      tags: [notes]
+      summary: Delete a note
+      responses:
+        "204":
+          description: Deleted
+
+  /materials:
+    get:
+      operationId: listMaterials
+      tags: [materials]
+      summary: Browse the PDF study material catalog
+      parameters:
+        - name: category
+          in: query
+          schema:
+            $ref: "#/components/schemas/VideoCategory"
+        - name: search
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Materials
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Material"
+
+  /materials/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+    get:
+      operationId: getMaterial
+      tags: [materials]
+      summary: Get a single material
+      responses:
+        "200":
+          description: Material
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Material"
+
+  /materials/{id}/bookmarks:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+    get:
+      operationId: listMaterialBookmarks
+      tags: [materials]
+      summary: List bookmarks for a PDF material
+      responses:
+        "200":
+          description: Material bookmarks
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MaterialBookmark"
+    post:
+      operationId: createMaterialBookmark
+      tags: [materials]
+      summary: Bookmark a page in a PDF material
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MaterialBookmarkInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MaterialBookmark"
+
+  /material-bookmarks/{bookmarkId}:
+    parameters:
+      - name: bookmarkId
+        in: path
+        required: true
+        schema:
+          type: integer
+    delete:
+      operationId: deleteMaterialBookmark
+      tags: [materials]
+      summary: Remove a PDF bookmark
+      responses:
+        "204":
+          description: Deleted
+
+  /materials/{id}/highlights:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+    get:
+      operationId: listMaterialHighlights
+      tags: [materials]
+      summary: List highlights for a PDF material
+      responses:
+        "200":
+          description: Material highlights
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MaterialHighlight"
+    post:
+      operationId: createMaterialHighlight
+      tags: [materials]
+      summary: Highlight text on a PDF page
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MaterialHighlightInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MaterialHighlight"
+
+  /material-highlights/{highlightId}:
+    parameters:
+      - name: highlightId
+        in: path
+        required: true
+        schema:
+          type: integer
+    delete:
+      operationId: deleteMaterialHighlight
+      tags: [materials]
+      summary: Remove a PDF highlight
+      responses:
+        "204":
+          description: Deleted
+
+  /workspace-layout/{contextKey}:
+    parameters:
+      - name: contextKey
+        in: path
+        required: true
+        schema:
+          type: string
+        description: >
+          Client-generated key identifying what the layout applies to,
+          e.g. "video:12" or "material:5".
+    get:
+      operationId: getWorkspaceLayout
+      tags: [workspace]
+      summary: Get the saved split-screen layout for a context
+      responses:
+        "200":
+          description: Layout
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WorkspaceLayout"
+        "404":
+          description: No saved layout
+    put:
+      operationId: saveWorkspaceLayout
+      tags: [workspace]
+      summary: Save/update the split-screen layout for a context
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WorkspaceLayoutInput"
+      responses:
+        "200":
+          description: Saved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WorkspaceLayout"
+
+  /ai/sessions:
+    get:
+      operationId: listAiSessions
+      tags: [ai]
+      summary: List AI Sensei chat sessions
+      responses:
+        "200":
+          description: Sessions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AiSession"
+    post:
+      operationId: createAiSession
+      tags: [ai]
+      summary: Start a new AI Sensei chat session
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AiSessionInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AiSession"
+
+  /ai/sessions/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+    delete:
+      operationId: deleteAiSession
+      tags: [ai]
+      summary: Delete an AI Sensei chat session
+      responses:
+        "204":
+          description: Deleted
+
+  /ai/sessions/{id}/messages:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+    get:
+      operationId: listAiMessages
+      tags: [ai]
+      summary: List messages in an AI Sensei session
+      responses:
+        "200":
+          description: Messages
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AiMessage"
+    post:
+      operationId: sendAiMessage
+      tags: [ai]
+      summary: Send a message and get the AI Sensei's reply
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AiMessageInput"
+      responses:
+        "201":
+          description: Assistant reply
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AiMessage"
+        "503":
+          description: AI Sensei is not configured
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorBody"
+
+  /achievements:
+    get:
+      operationId: listAchievements
+      tags: [achievements]
+      summary: List achievements with progress/unlocked state
+      responses:
+        "200":
+          description: Achievements
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Achievement"
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +873,515 @@ components:
       required:
         - status
 
+    ApiErrorBody:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: string
+
+    VideoCategory:
+      type: string
+      enum: [NEET, JEE, CLAT, UPSC, Languages]
+
+    TaskPriority:
+      type: string
+      enum: [low, medium, high]
+
+    Profile:
+      type: object
+      required: [displayName, avatarColor, createdAt]
+      properties:
+        displayName:
+          type: string
+        examName:
+          type: ["string", "null"]
+        examDate:
+          type: ["string", "null"]
+          format: date
+        avatarColor:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+
+    ProfileUpdate:
+      type: object
+      properties:
+        displayName:
+          type: string
+          minLength: 1
+        examName:
+          type: ["string", "null"]
+        examDate:
+          type: ["string", "null"]
+          format: date
+        avatarColor:
+          type: string
+
+    DashboardSummary:
+      type: object
+      required:
+        - displayName
+        - todayStudyMinutes
+        - currentStreak
+        - longestStreak
+        - examName
+        - examDate
+        - examDaysLeft
+        - continueLearning
+        - todayTasksTotal
+        - todayTasksCompleted
+        - weeklyProgressPercent
+      properties:
+        displayName:
+          type: string
+        todayStudyMinutes:
+          type: integer
+        currentStreak:
+          type: integer
+        longestStreak:
+          type: integer
+        examName:
+          type: ["string", "null"]
+        examDate:
+          type: ["string", "null"]
+          format: date
+        examDaysLeft:
+          type: ["integer", "null"]
+        continueLearning:
+          oneOf:
+            - $ref: "#/components/schemas/ContinueWatchingItem"
+            - type: "null"
+        todayTasksTotal:
+          type: integer
+        todayTasksCompleted:
+          type: integer
+        weeklyProgressPercent:
+          type: integer
+
+    Task:
+      type: object
+      required: [id, title, date, completed, priority, createdAt]
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        date:
+          type: string
+          format: date
+        completed:
+          type: boolean
+        priority:
+          $ref: "#/components/schemas/TaskPriority"
+        createdAt:
+          type: string
+          format: date-time
+
+    TaskInput:
+      type: object
+      required: [title, date]
+      properties:
+        title:
+          type: string
+          minLength: 1
+        date:
+          type: string
+          format: date
+        priority:
+          $ref: "#/components/schemas/TaskPriority"
+
+    TaskUpdate:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+        date:
+          type: string
+          format: date
+        completed:
+          type: boolean
+        priority:
+          $ref: "#/components/schemas/TaskPriority"
+
+    StudySessionSource:
+      type: string
+      enum: [manual, pomodoro]
+
+    StudySession:
+      type: object
+      required: [id, durationMinutes, source, date, createdAt]
+      properties:
+        id:
+          type: integer
+        durationMinutes:
+          type: integer
+        source:
+          $ref: "#/components/schemas/StudySessionSource"
+        date:
+          type: string
+          format: date
+        createdAt:
+          type: string
+          format: date-time
+
+    StudySessionInput:
+      type: object
+      required: [durationMinutes, source]
+      properties:
+        durationMinutes:
+          type: integer
+          minimum: 1
+        source:
+          $ref: "#/components/schemas/StudySessionSource"
+
+    DailyStudyMinutes:
+      type: object
+      required: [date, minutes]
+      properties:
+        date:
+          type: string
+          format: date
+        minutes:
+          type: integer
+
+    Video:
+      type: object
+      required:
+        - id
+        - youtubeId
+        - title
+        - channel
+        - category
+        - durationSeconds
+        - thumbnailUrl
+      properties:
+        id:
+          type: integer
+        youtubeId:
+          type: string
+        title:
+          type: string
+        channel:
+          type: string
+        category:
+          $ref: "#/components/schemas/VideoCategory"
+        durationSeconds:
+          type: integer
+        thumbnailUrl:
+          type: string
+
+    ContinueWatchingItem:
+      type: object
+      required: [videoId, video, progressSeconds, lastWatchedAt]
+      properties:
+        videoId:
+          type: integer
+        video:
+          $ref: "#/components/schemas/Video"
+        progressSeconds:
+          type: integer
+        lastWatchedAt:
+          type: string
+          format: date-time
+
+    ContinueWatchingInput:
+      type: object
+      required: [progressSeconds]
+      properties:
+        progressSeconds:
+          type: integer
+          minimum: 0
+
+    BookmarkInput:
+      type: object
+      required: [videoId]
+      properties:
+        videoId:
+          type: integer
+
+    Playlist:
+      type: object
+      required: [id, name, itemCount, createdAt]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        itemCount:
+          type: integer
+        createdAt:
+          type: string
+          format: date-time
+
+    PlaylistInput:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+          minLength: 1
+
+    PlaylistItemInput:
+      type: object
+      required: [videoId]
+      properties:
+        videoId:
+          type: integer
+
+    PlaylistDetail:
+      type: object
+      required: [id, name, createdAt, videos]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        videos:
+          type: array
+          items:
+            $ref: "#/components/schemas/Video"
+
+    NoteFolder:
+      type: object
+      required: [id, name, createdAt]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+
+    NoteFolderInput:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+          minLength: 1
+
+    Note:
+      type: object
+      required: [id, title, content, folderId, createdAt, updatedAt]
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        content:
+          type: string
+        folderId:
+          type: ["integer", "null"]
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    NoteInput:
+      type: object
+      required: [title]
+      properties:
+        title:
+          type: string
+          minLength: 1
+        content:
+          type: string
+        folderId:
+          type: ["integer", "null"]
+
+    NoteUpdate:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+        content:
+          type: string
+        folderId:
+          type: ["integer", "null"]
+
+    Material:
+      type: object
+      required: [id, title, category, sourceUrl, pageCount]
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        category:
+          $ref: "#/components/schemas/VideoCategory"
+        sourceUrl:
+          type: string
+        pageCount:
+          type: ["integer", "null"]
+
+    MaterialBookmark:
+      type: object
+      required: [id, materialId, pageNumber, note, createdAt]
+      properties:
+        id:
+          type: integer
+        materialId:
+          type: integer
+        pageNumber:
+          type: integer
+        note:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+          format: date-time
+
+    MaterialBookmarkInput:
+      type: object
+      required: [pageNumber]
+      properties:
+        pageNumber:
+          type: integer
+          minimum: 1
+        note:
+          type: ["string", "null"]
+
+    MaterialHighlight:
+      type: object
+      required: [id, materialId, pageNumber, text, color, createdAt]
+      properties:
+        id:
+          type: integer
+        materialId:
+          type: integer
+        pageNumber:
+          type: integer
+        text:
+          type: string
+        color:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+
+    MaterialHighlightInput:
+      type: object
+      required: [pageNumber, text, color]
+      properties:
+        pageNumber:
+          type: integer
+          minimum: 1
+        text:
+          type: string
+          minLength: 1
+        color:
+          type: string
+
+    WorkspaceLayoutType:
+      type: string
+      enum: [video-notes, video-pdf, pdf-notes, ai-pdf, ai-notes]
+
+    WorkspaceLayout:
+      type: object
+      required: [contextKey, layoutType, splitRatio, noteId, updatedAt]
+      properties:
+        contextKey:
+          type: string
+        layoutType:
+          $ref: "#/components/schemas/WorkspaceLayoutType"
+        splitRatio:
+          type: integer
+        noteId:
+          type: ["integer", "null"]
+        updatedAt:
+          type: string
+          format: date-time
+
+    WorkspaceLayoutInput:
+      type: object
+      required: [layoutType, splitRatio]
+      properties:
+        layoutType:
+          $ref: "#/components/schemas/WorkspaceLayoutType"
+        splitRatio:
+          type: integer
+          minimum: 0
+          maximum: 100
+        noteId:
+          type: ["integer", "null"]
+
+    AiSessionMode:
+      type: string
+      enum: [explain, doubt, summarize, quiz]
+
+    AiSession:
+      type: object
+      required: [id, title, mode, createdAt]
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        mode:
+          $ref: "#/components/schemas/AiSessionMode"
+        createdAt:
+          type: string
+          format: date-time
+
+    AiSessionInput:
+      type: object
+      required: [title, mode]
+      properties:
+        title:
+          type: string
+          minLength: 1
+        mode:
+          $ref: "#/components/schemas/AiSessionMode"
+
+    AiMessageRole:
+      type: string
+      enum: [user, assistant]
+
+    AiMessage:
+      type: object
+      required: [id, sessionId, role, content, createdAt]
+      properties:
+        id:
+          type: integer
+        sessionId:
+          type: integer
+        role:
+          $ref: "#/components/schemas/AiMessageRole"
+        content:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+
+    AiMessageInput:
+      type: object
+      required: [content]
+      properties:
+        content:
+          type: string
+          minLength: 1
+
+    Achievement:
+      type: object
+      required: [id, title, description, achieved, achievedAt]
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        achieved:
+          type: boolean
+        achievedAt:
+          type: ["string", "null"]
+          format: date-time
