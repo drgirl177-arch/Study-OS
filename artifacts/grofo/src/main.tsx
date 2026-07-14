@@ -1,7 +1,13 @@
-import { createRoot } from 'react-dom/client';
+import { createRoot } from "react-dom/client";
 
-import App from './App';
+import App from "./App";
 
-import './index.css';
+import "./index.css";
 
-createRoot(document.getElementById('root')!).render(<App />);
+const root = createRoot(document.getElementById("root")!);
+root.render(<App />);
+
+const splash = document.getElementById("splash-screen");
+if (splash) {
+  splash.remove();
+}

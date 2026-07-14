@@ -1,3 +1,12 @@
 <svg width="180" height="180" viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg">
-<rect width="180" height="180" rx="36" fill="#FF3C00"/>
+  <defs>
+    <linearGradient id="faviconGradient" x1="0" y1="0" x2="180" y2="180" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#2563EB" />
+      <stop offset="100%" stop-color="#0EA5E9" />
+    </linearGradient>
+  </defs>
+  <rect width="180" height="180" rx="36" fill="url(#faviconGradient)" />
+  <path d="M46 52C46 52 72 73 90 73C108 73 134 52 134 52V123C134 123 108 102 90 102C72 102 46 123 46 123V52Z" fill="white" />
+  <path d="M62 80L90 52L118 80" stroke="#0EA5E9" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" />
+  <path d="M90 52V108" stroke="#0EA5E9" stroke-width="10" stroke-linecap="round" />
 </svg>

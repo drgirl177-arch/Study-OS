@@ -1,4 +1,12 @@
-<svg xmlns="http://www.svg.org/2000/svg" viewBox="0 0 200 200" fill="none">
-  <rect width="200" height="200" rx="40" fill="#2563EB"/>
-  <path d="M100 40C66.8629 40 40 66.8629 40 100C40 133.137 66.8629 160 100 160C133.137 160 160 133.137 160 100C160 66.8629 133.137 40 100 40ZM100 144C75.7 144 56 124.3 56 100C56 75.7 75.7 56 100 56C124.3 56 144 75.7 144 100C144 124.3 124.3 144 100 144ZM100 72C84.536 72 72 84.536 72 100C72 115.464 84.536 128 100 128V72Z" fill="white"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none">
+  <defs>
+    <linearGradient id="logoGradient" x1="0" y1="0" x2="200" y2="200" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#2563EB" />
+      <stop offset="100%" stop-color="#0EA5E9" />
+    </linearGradient>
+  </defs>
+  <rect width="200" height="200" rx="46" fill="url(#logoGradient)" />
+  <path d="M54 60C54 60 88 86 100 86C112 86 146 60 146 60V136C146 136 112 110 100 110C88 110 54 136 54 136V60Z" fill="white" />
+  <path d="M76 88L100 62L124 88" stroke="#0EA5E9" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" />
+  <path d="M100 62V118" stroke="#0EA5E9" stroke-width="12" stroke-linecap="round" />
 </svg>

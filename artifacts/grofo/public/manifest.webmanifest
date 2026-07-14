@@ -1,0 +1,26 @@
+{
+  "name": "GROFO",
+  "short_name": "GROFO",
+  "description": "GROFO is an AI-powered learning operating system for students worldwide.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": ["standalone", "fullscreen"],
+  "background_color": "#ffffff",
+  "theme_color": "#2563EB",
+  "categories": ["education", "productivity"],
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "180x180",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/logo.svg",
+      "sizes": "200x200",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
