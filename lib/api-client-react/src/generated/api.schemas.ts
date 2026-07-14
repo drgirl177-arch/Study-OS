@@ -85,7 +85,7 @@ export interface Video {
   youtubeId: string;
   title: string;
   channel: string;
-  category: VideoCategory;
+  category?: VideoCategory | null;
   type: VideoType;
   durationSeconds: number;
   thumbnailUrl: string;
@@ -361,6 +361,103 @@ export interface Achievement {
   achievedAt: string | null;
 }
 
+export type FeedbackType = typeof FeedbackType[keyof typeof FeedbackType];
+
+
+export const FeedbackType = {
+  bug: 'bug',
+  feature: 'feature',
+  general: 'general',
+} as const;
+
+export interface Feedback {
+  id: number;
+  type: FeedbackType;
+  message: string;
+  /** @nullable */
+  page?: string | null;
+  createdAt: string;
+}
+
+export interface FeedbackInput {
+  type: FeedbackType;
+  /**
+     * @minLength 1
+     * @maxLength 4000
+     */
+  message: string;
+  page?: string;
+}
+
+export type AnalyticsEventInputProperties = { [key: string]: unknown };
+
+export interface AnalyticsEventInput {
+  /** @minLength 1 */
+  name: string;
+  path?: string;
+  anonId?: string;
+  properties?: AnalyticsEventInputProperties;
+}
+
+export type CommunityCategory = typeof CommunityCategory[keyof typeof CommunityCategory];
+
+
+export const CommunityCategory = {
+  exam: 'exam',
+  motivation: 'motivation',
+  productivity: 'productivity',
+  doubts: 'doubts',
+  general: 'general',
+} as const;
+
+export interface CommunityPost {
+  id: number;
+  category: CommunityCategory;
+  title: string;
+  body: string;
+  upvoteCount: number;
+  commentCount: number;
+  createdAt: string;
+  authorName: string;
+  authorAvatarColor: string;
+  hasUpvoted: boolean;
+  isOwnPost: boolean;
+}
+
+export interface CommunityPostInput {
+  category: CommunityCategory;
+  /**
+     * @minLength 3
+     * @maxLength 200
+     */
+  title: string;
+  /**
+     * @minLength 1
+     * @maxLength 5000
+     */
+  body: string;
+}
+
+export interface CommunityComment {
+  id: number;
+  postId: number;
+  body: string;
+  upvoteCount: number;
+  createdAt: string;
+  authorName: string;
+  authorAvatarColor: string;
+  hasUpvoted: boolean;
+  isOwnComment: boolean;
+}
+
+export interface CommunityCommentInput {
+  /**
+     * @minLength 1
+     * @maxLength 2000
+     */
+  body: string;
+}
+
 export type ListTasksParams = {
 startDate?: string;
 endDate?: string;
@@ -385,5 +482,9 @@ search?: string;
 export type ListMaterialsParams = {
 category?: VideoCategory;
 search?: string;
+};
+
+export type ListCommunityPostsParams = {
+category?: CommunityCategory;
 };
 

@@ -69,7 +69,7 @@ export const GetDashboardSummaryResponse = zod.object({
   "youtubeId": zod.string(),
   "title": zod.string(),
   "channel": zod.string(),
-  "category": zod.enum(['NEET', 'JEE', 'CLAT', 'UPSC', 'Languages']),
+  "category": zod.union([zod.enum(['NEET', 'JEE', 'CLAT', 'UPSC', 'Languages']),zod.null()]).optional(),
   "type": zod.enum(['educational', 'motivation', 'music']),
   "durationSeconds": zod.number(),
   "thumbnailUrl": zod.string()
@@ -205,7 +205,7 @@ export const ListVideosResponseItem = zod.object({
   "youtubeId": zod.string(),
   "title": zod.string(),
   "channel": zod.string(),
-  "category": zod.enum(['NEET', 'JEE', 'CLAT', 'UPSC', 'Languages']),
+  "category": zod.union([zod.enum(['NEET', 'JEE', 'CLAT', 'UPSC', 'Languages']),zod.null()]).optional(),
   "type": zod.enum(['educational', 'motivation', 'music']),
   "durationSeconds": zod.number(),
   "thumbnailUrl": zod.string()
@@ -249,7 +249,7 @@ export const ImportYoutubeVideoResponse = zod.object({
   "youtubeId": zod.string(),
   "title": zod.string(),
   "channel": zod.string(),
-  "category": zod.enum(['NEET', 'JEE', 'CLAT', 'UPSC', 'Languages']),
+  "category": zod.union([zod.enum(['NEET', 'JEE', 'CLAT', 'UPSC', 'Languages']),zod.null()]).optional(),
   "type": zod.enum(['educational', 'motivation', 'music']),
   "durationSeconds": zod.number(),
   "thumbnailUrl": zod.string()
@@ -268,7 +268,7 @@ export const GetVideoResponse = zod.object({
   "youtubeId": zod.string(),
   "title": zod.string(),
   "channel": zod.string(),
-  "category": zod.enum(['NEET', 'JEE', 'CLAT', 'UPSC', 'Languages']),
+  "category": zod.union([zod.enum(['NEET', 'JEE', 'CLAT', 'UPSC', 'Languages']),zod.null()]).optional(),
   "type": zod.enum(['educational', 'motivation', 'music']),
   "durationSeconds": zod.number(),
   "thumbnailUrl": zod.string()
@@ -285,7 +285,7 @@ export const ListContinueWatchingResponseItem = zod.object({
   "youtubeId": zod.string(),
   "title": zod.string(),
   "channel": zod.string(),
-  "category": zod.enum(['NEET', 'JEE', 'CLAT', 'UPSC', 'Languages']),
+  "category": zod.union([zod.enum(['NEET', 'JEE', 'CLAT', 'UPSC', 'Languages']),zod.null()]).optional(),
   "type": zod.enum(['educational', 'motivation', 'music']),
   "durationSeconds": zod.number(),
   "thumbnailUrl": zod.string()
@@ -318,7 +318,7 @@ export const UpsertContinueWatchingResponse = zod.object({
   "youtubeId": zod.string(),
   "title": zod.string(),
   "channel": zod.string(),
-  "category": zod.enum(['NEET', 'JEE', 'CLAT', 'UPSC', 'Languages']),
+  "category": zod.union([zod.enum(['NEET', 'JEE', 'CLAT', 'UPSC', 'Languages']),zod.null()]).optional(),
   "type": zod.enum(['educational', 'motivation', 'music']),
   "durationSeconds": zod.number(),
   "thumbnailUrl": zod.string()
@@ -336,7 +336,7 @@ export const ListBookmarksResponseItem = zod.object({
   "youtubeId": zod.string(),
   "title": zod.string(),
   "channel": zod.string(),
-  "category": zod.enum(['NEET', 'JEE', 'CLAT', 'UPSC', 'Languages']),
+  "category": zod.union([zod.enum(['NEET', 'JEE', 'CLAT', 'UPSC', 'Languages']),zod.null()]).optional(),
   "type": zod.enum(['educational', 'motivation', 'music']),
   "durationSeconds": zod.number(),
   "thumbnailUrl": zod.string()
@@ -356,7 +356,7 @@ export const CreateBookmarkResponse = zod.object({
   "youtubeId": zod.string(),
   "title": zod.string(),
   "channel": zod.string(),
-  "category": zod.enum(['NEET', 'JEE', 'CLAT', 'UPSC', 'Languages']),
+  "category": zod.union([zod.enum(['NEET', 'JEE', 'CLAT', 'UPSC', 'Languages']),zod.null()]).optional(),
   "type": zod.enum(['educational', 'motivation', 'music']),
   "durationSeconds": zod.number(),
   "thumbnailUrl": zod.string()
@@ -419,7 +419,7 @@ export const GetPlaylistResponse = zod.object({
   "youtubeId": zod.string(),
   "title": zod.string(),
   "channel": zod.string(),
-  "category": zod.enum(['NEET', 'JEE', 'CLAT', 'UPSC', 'Languages']),
+  "category": zod.union([zod.enum(['NEET', 'JEE', 'CLAT', 'UPSC', 'Languages']),zod.null()]).optional(),
   "type": zod.enum(['educational', 'motivation', 'music']),
   "durationSeconds": zod.number(),
   "thumbnailUrl": zod.string()
@@ -457,7 +457,7 @@ export const AddPlaylistItemResponse = zod.object({
   "youtubeId": zod.string(),
   "title": zod.string(),
   "channel": zod.string(),
-  "category": zod.enum(['NEET', 'JEE', 'CLAT', 'UPSC', 'Languages']),
+  "category": zod.union([zod.enum(['NEET', 'JEE', 'CLAT', 'UPSC', 'Languages']),zod.null()]).optional(),
   "type": zod.enum(['educational', 'motivation', 'music']),
   "durationSeconds": zod.number(),
   "thumbnailUrl": zod.string()
@@ -883,5 +883,220 @@ export const ListAchievementsResponseItem = zod.object({
   "achievedAt": zod.coerce.date().nullable()
 })
 export const ListAchievementsResponse = zod.array(ListAchievementsResponseItem)
+
+
+/**
+ * @summary Submit beta feedback (bug report, feature request, or general note)
+ */
+export const submitFeedbackBodyMessageMax = 4000;
+
+
+
+export const SubmitFeedbackBody = zod.object({
+  "type": zod.enum(['bug', 'feature', 'general']),
+  "message": zod.string().min(1).max(submitFeedbackBodyMessageMax),
+  "page": zod.string().optional()
+})
+
+export const SubmitFeedbackResponse = zod.object({
+  "id": zod.number(),
+  "type": zod.enum(['bug', 'feature', 'general']),
+  "message": zod.string(),
+  "page": zod.string().nullish(),
+  "createdAt": zod.coerce.date()
+})
+
+
+/**
+ * @summary Record a product analytics event (page view, feature usage, etc). Works for signed-out guests too.
+ */
+
+
+
+export const TrackAnalyticsEventBody = zod.object({
+  "name": zod.string().min(1),
+  "path": zod.string().optional(),
+  "anonId": zod.string().optional(),
+  "properties": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+export const TrackAnalyticsEventResponse = zod.void()
+
+
+/**
+ * @summary List community posts, newest first
+ */
+export const ListCommunityPostsQueryParams = zod.object({
+  "category": zod.enum(['exam', 'motivation', 'productivity', 'doubts', 'general']).optional()
+})
+
+export const ListCommunityPostsResponseItem = zod.object({
+  "id": zod.number(),
+  "category": zod.enum(['exam', 'motivation', 'productivity', 'doubts', 'general']),
+  "title": zod.string(),
+  "body": zod.string(),
+  "upvoteCount": zod.number(),
+  "commentCount": zod.number(),
+  "createdAt": zod.coerce.date(),
+  "authorName": zod.string(),
+  "authorAvatarColor": zod.string(),
+  "hasUpvoted": zod.boolean(),
+  "isOwnPost": zod.boolean()
+})
+export const ListCommunityPostsResponse = zod.array(ListCommunityPostsResponseItem)
+
+
+/**
+ * @summary Create a community post
+ */
+export const createCommunityPostBodyTitleMin = 3;
+export const createCommunityPostBodyTitleMax = 200;
+
+export const createCommunityPostBodyBodyMax = 5000;
+
+
+
+export const CreateCommunityPostBody = zod.object({
+  "category": zod.enum(['exam', 'motivation', 'productivity', 'doubts', 'general']),
+  "title": zod.string().min(createCommunityPostBodyTitleMin).max(createCommunityPostBodyTitleMax),
+  "body": zod.string().min(1).max(createCommunityPostBodyBodyMax)
+})
+
+export const CreateCommunityPostResponse = zod.object({
+  "id": zod.number(),
+  "category": zod.enum(['exam', 'motivation', 'productivity', 'doubts', 'general']),
+  "title": zod.string(),
+  "body": zod.string(),
+  "upvoteCount": zod.number(),
+  "commentCount": zod.number(),
+  "createdAt": zod.coerce.date(),
+  "authorName": zod.string(),
+  "authorAvatarColor": zod.string(),
+  "hasUpvoted": zod.boolean(),
+  "isOwnPost": zod.boolean()
+})
+
+
+/**
+ * @summary Get a single community post
+ */
+export const GetCommunityPostParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const GetCommunityPostResponse = zod.object({
+  "id": zod.number(),
+  "category": zod.enum(['exam', 'motivation', 'productivity', 'doubts', 'general']),
+  "title": zod.string(),
+  "body": zod.string(),
+  "upvoteCount": zod.number(),
+  "commentCount": zod.number(),
+  "createdAt": zod.coerce.date(),
+  "authorName": zod.string(),
+  "authorAvatarColor": zod.string(),
+  "hasUpvoted": zod.boolean(),
+  "isOwnPost": zod.boolean()
+})
+
+
+/**
+ * @summary Delete a community post (author only)
+ */
+export const DeleteCommunityPostParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const DeleteCommunityPostResponse = zod.void()
+
+
+/**
+ * @summary Toggle the current user's upvote on a post
+ */
+export const UpvoteCommunityPostParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const UpvoteCommunityPostResponse = zod.object({
+  "id": zod.number(),
+  "category": zod.enum(['exam', 'motivation', 'productivity', 'doubts', 'general']),
+  "title": zod.string(),
+  "body": zod.string(),
+  "upvoteCount": zod.number(),
+  "commentCount": zod.number(),
+  "createdAt": zod.coerce.date(),
+  "authorName": zod.string(),
+  "authorAvatarColor": zod.string(),
+  "hasUpvoted": zod.boolean(),
+  "isOwnPost": zod.boolean()
+})
+
+
+/**
+ * @summary List comments on a post, oldest first
+ */
+export const ListCommunityCommentsParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const ListCommunityCommentsResponseItem = zod.object({
+  "id": zod.number(),
+  "postId": zod.number(),
+  "body": zod.string(),
+  "upvoteCount": zod.number(),
+  "createdAt": zod.coerce.date(),
+  "authorName": zod.string(),
+  "authorAvatarColor": zod.string(),
+  "hasUpvoted": zod.boolean(),
+  "isOwnComment": zod.boolean()
+})
+export const ListCommunityCommentsResponse = zod.array(ListCommunityCommentsResponseItem)
+
+
+/**
+ * @summary Add a comment to a post
+ */
+export const CreateCommunityCommentParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const createCommunityCommentBodyBodyMax = 2000;
+
+
+
+export const CreateCommunityCommentBody = zod.object({
+  "body": zod.string().min(1).max(createCommunityCommentBodyBodyMax)
+})
+
+export const CreateCommunityCommentResponse = zod.object({
+  "id": zod.number(),
+  "postId": zod.number(),
+  "body": zod.string(),
+  "upvoteCount": zod.number(),
+  "createdAt": zod.coerce.date(),
+  "authorName": zod.string(),
+  "authorAvatarColor": zod.string(),
+  "hasUpvoted": zod.boolean(),
+  "isOwnComment": zod.boolean()
+})
+
+
+/**
+ * @summary Toggle the current user's upvote on a comment
+ */
+export const UpvoteCommunityCommentParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const UpvoteCommunityCommentResponse = zod.object({
+  "id": zod.number(),
+  "postId": zod.number(),
+  "body": zod.string(),
+  "upvoteCount": zod.number(),
+  "createdAt": zod.coerce.date(),
+  "authorName": zod.string(),
+  "authorAvatarColor": zod.string(),
+  "hasUpvoted": zod.boolean(),
+  "isOwnComment": zod.boolean()
+})
 
 

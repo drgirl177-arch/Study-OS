@@ -18,8 +18,10 @@ import MaterialsPage from '@/pages/materials';
 import AiPage from '@/pages/ai';
 import PlannerPage from '@/pages/planner';
 import ProfilePage from '@/pages/profile';
+import CommunityPage from '@/pages/community';
 import { AppShell } from '@/components/layout/app-shell';
 import { ThemeProvider } from '@/components/theme-provider';
+import { usePageViewTracking } from '@/lib/analytics';
 
 const queryClient = new QueryClient();
 
@@ -140,7 +142,9 @@ function ProtectedRoute({ component: Component }: { component: React.ComponentTy
         <Component />
       </Show>
       <Show when="signed-out">
-        <Redirect to="/" />
+        {/* Send straight to sign-up instead of the landing page — the visitor
+            already showed intent by clicking into a personal feature. */}
+        <Redirect to="/sign-up" />
       </Show>
     </>
   );
@@ -151,18 +155,25 @@ function AuthenticatedApp() {
     <AppShell>
       <Switch>
         <Route path="/home" component={() => <ProtectedRoute component={HomePage} />} />
-        <Route path="/learn" component={() => <ProtectedRoute component={LearnPage} />} />
+        {/* Learn is browsable by guests — no login wall for exploring content. */}
+        <Route path="/learn" component={LearnPage} />
         <Route path="/workspace" component={() => <ProtectedRoute component={WorkspacePage} />} />
         <Route path="/workspace/:videoId" component={() => <ProtectedRoute component={WorkspacePage} />} />
         <Route path="/notes" component={() => <ProtectedRoute component={NotesPage} />} />
         <Route path="/materials" component={() => <ProtectedRoute component={MaterialsPage} />} />
         <Route path="/ai" component={() => <ProtectedRoute component={AiPage} />} />
+        <Route path="/community" component={() => <ProtectedRoute component={CommunityPage} />} />
         <Route path="/planner" component={() => <ProtectedRoute component={PlannerPage} />} />
         <Route path="/profile" component={() => <ProtectedRoute component={ProfilePage} />} />
         <Route component={NotFound} />
       </Switch>
     </AppShell>
   );
+}
+
+function PageViewTracker() {
+  usePageViewTracking();
+  return null;
 }
 
 function ClerkProviderWithRoutes() {
@@ -180,6 +191,7 @@ function ClerkProviderWithRoutes() {
     >
       <QueryClientProvider client={queryClient}>
         <ClerkQueryClientCacheInvalidator />
+        <PageViewTracker />
         <Switch>
           <Route path="/" component={HomeRedirect} />
           <Route path="/sign-in/*?" component={SignInPage} />

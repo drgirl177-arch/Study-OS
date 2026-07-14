@@ -15,3 +15,8 @@ export * from "./materialHighlights";
 export * from "./workspaceLayouts";
 export * from "./aiSessions";
 export * from "./aiMessages";
+export * from "./feedback";
+export * from "./analyticsEvents";
+export * from "./communityPosts";
+export * from "./communityComments";
+export * from "./communityVotes";

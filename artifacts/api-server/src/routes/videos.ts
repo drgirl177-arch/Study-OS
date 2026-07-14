@@ -8,7 +8,9 @@ import { logger } from "../lib/logger";
 
 const router: IRouter = Router();
 
-router.get("/videos", requireAuth, async (req, res): Promise<void> => {
+// Public — guests can browse the catalog before signing up. Personal
+// actions (bookmark, continue-watching, import) still require auth.
+router.get("/videos", async (req, res): Promise<void> => {
   const category = typeof req.query.category === "string" ? req.query.category : undefined;
   const type = typeof req.query.type === "string" ? req.query.type : undefined;
   const search = typeof req.query.search === "string" ? req.query.search : undefined;
@@ -73,7 +75,7 @@ router.post("/videos/import", requireAuth, async (req, res): Promise<void> => {
     return;
   }
 
-  const category = body.data.category ?? (body.data.type === "educational" ? "NEET" : body.data.type === "motivation" ? "Motivation" : "Music");
+  const category = body.data.category ?? (body.data.type === "educational" ? "NEET" : null);
 
   const [created] = await db
     .insert(videosTable)
@@ -91,7 +93,7 @@ router.post("/videos/import", requireAuth, async (req, res): Promise<void> => {
   res.status(201).json(created);
 });
 
-router.get("/videos/:id", requireAuth, async (req, res): Promise<void> => {
+router.get("/videos/:id", async (req, res): Promise<void> => {
   const params = GetVideoParams.safeParse(req.params);
   if (!params.success) {
     res.status(400).json({ error: params.error.message });

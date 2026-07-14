@@ -13,7 +13,7 @@ export interface Video {
   youtubeId: string;
   title: string;
   channel: string;
-  category: VideoCategory;
+  category?: VideoCategory | null;
   type: VideoType;
   durationSeconds: number;
   thumbnailUrl: string;

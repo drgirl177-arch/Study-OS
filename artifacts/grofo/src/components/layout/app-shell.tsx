@@ -1,6 +1,8 @@
 import { Link, useLocation } from "wouter";
-import { Home, BookOpen, Calendar, Bot, User, Menu } from "lucide-react";
+import { Show } from "@clerk/react";
+import { Home, BookOpen, Calendar, Bot, User, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { FeedbackDialog } from "@/components/feedback-dialog";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
@@ -8,6 +10,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const navItems = [
     { href: "/home", label: "Home", icon: Home },
     { href: "/learn", label: "Learn", icon: BookOpen },
+    { href: "/community", label: "Community", icon: Users },
     { href: "/planner", label: "Planner", icon: Calendar },
     { href: "/ai", label: "AI", icon: Bot },
     { href: "/profile", label: "Profile", icon: User },
@@ -79,6 +82,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           })}
         </nav>
       </aside>
+
+      <Show when="signed-in">
+        <FeedbackDialog />
+      </Show>
     </div>
   );
 }

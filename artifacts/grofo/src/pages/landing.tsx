@@ -45,7 +45,15 @@ export default function LandingPage() {
                 Start Studying Now
               </Button>
             </Link>
+            <Link href="/learn">
+              <Button size="lg" variant="outline" className="rounded-2xl text-lg h-14 px-8 w-full sm:w-auto">
+                Explore without an account
+              </Button>
+            </Link>
           </div>
+          <p className="text-sm text-muted-foreground mt-4 animate-in fade-in duration-700 delay-500">
+            GROFO is a student space where learning comes first — AI help, educational content, and focus tools together.
+          </p>
         </section>
 
         {/* Features Grid */}

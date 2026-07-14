@@ -36,6 +36,12 @@ tags:
     description: AI Sensei chat
   - name: achievements
     description: Achievements
+  - name: feedback
+    description: Beta feedback (bugs, feature requests, general)
+  - name: community
+    description: Reddit-like student community — posts, comments, upvotes
+  - name: analytics
+    description: Lightweight product analytics event tracking
 paths:
   /healthz:
     get:
@@ -911,6 +917,180 @@ paths:
                 items:
                   $ref: "#/components/schemas/Achievement"
 
+  /feedback:
+    post:
+      operationId: submitFeedback
+      tags: [feedback]
+      summary: Submit beta feedback (bug report, feature request, or general note)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FeedbackInput"
+      responses:
+        "201":
+          description: Feedback recorded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Feedback"
+
+  /analytics/events:
+    post:
+      operationId: trackAnalyticsEvent
+      tags: [analytics]
+      summary: Record a product analytics event (page view, feature usage, etc). Works for signed-out guests too.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AnalyticsEventInput"
+      responses:
+        "204":
+          description: Recorded
+
+  /community/posts:
+    get:
+      operationId: listCommunityPosts
+      tags: [community]
+      summary: List community posts, newest first
+      parameters:
+        - name: category
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/CommunityCategory"
+      responses:
+        "200":
+          description: Posts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CommunityPost"
+    post:
+      operationId: createCommunityPost
+      tags: [community]
+      summary: Create a community post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CommunityPostInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CommunityPost"
+
+  /community/posts/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+    get:
+      operationId: getCommunityPost
+      tags: [community]
+      summary: Get a single community post
+      responses:
+        "200":
+          description: Post
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CommunityPost"
+    delete:
+      operationId: deleteCommunityPost
+      tags: [community]
+      summary: Delete a community post (author only)
+      responses:
+        "204":
+          description: Deleted
+
+  /community/posts/{id}/upvote:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+    post:
+      operationId: upvoteCommunityPost
+      tags: [community]
+      summary: Toggle the current user's upvote on a post
+      responses:
+        "200":
+          description: Updated post
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CommunityPost"
+
+  /community/posts/{id}/comments:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+    get:
+      operationId: listCommunityComments
+      tags: [community]
+      summary: List comments on a post, oldest first
+      responses:
+        "200":
+          description: Comments
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CommunityComment"
+    post:
+      operationId: createCommunityComment
+      tags: [community]
+      summary: Add a comment to a post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CommunityCommentInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CommunityComment"
+
+  /community/comments/{id}/upvote:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+    post:
+      operationId: upvoteCommunityComment
+      tags: [community]
+      summary: Toggle the current user's upvote on a comment
+      responses:
+        "200":
+          description: Updated comment
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CommunityComment"
+
 components:
   schemas:
     HealthStatus:
@@ -1140,7 +1320,6 @@ components:
         - youtubeId
         - title
         - channel
-        - category
         - type
         - durationSeconds
         - thumbnailUrl
@@ -1153,8 +1332,12 @@ components:
           type: string
         channel:
           type: string
+        # Exam category only applies to educational videos; motivation/music
+        # content has no category.
         category:
-          $ref: "#/components/schemas/VideoCategory"
+          anyOf:
+            - $ref: "#/components/schemas/VideoCategory"
+            - type: "null"
         type:
           $ref: "#/components/schemas/VideoType"
         durationSeconds:
@@ -1474,3 +1657,151 @@ components:
         achievedAt:
           type: ["string", "null"]
           format: date-time
+
+    FeedbackType:
+      type: string
+      enum: [bug, feature, general]
+
+    Feedback:
+      type: object
+      required: [id, type, message, createdAt]
+      properties:
+        id:
+          type: integer
+        type:
+          $ref: "#/components/schemas/FeedbackType"
+        message:
+          type: string
+        page:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+          format: date-time
+
+    FeedbackInput:
+      type: object
+      required: [type, message]
+      properties:
+        type:
+          $ref: "#/components/schemas/FeedbackType"
+        message:
+          type: string
+          minLength: 1
+          maxLength: 4000
+        page:
+          type: string
+
+    AnalyticsEventInput:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+          minLength: 1
+        path:
+          type: string
+        anonId:
+          type: string
+        properties:
+          type: object
+          additionalProperties: true
+
+    CommunityCategory:
+      type: string
+      enum: [exam, motivation, productivity, doubts, general]
+
+    CommunityPost:
+      type: object
+      required:
+        - id
+        - category
+        - title
+        - body
+        - upvoteCount
+        - commentCount
+        - createdAt
+        - authorName
+        - authorAvatarColor
+        - hasUpvoted
+        - isOwnPost
+      properties:
+        id:
+          type: integer
+        category:
+          $ref: "#/components/schemas/CommunityCategory"
+        title:
+          type: string
+        body:
+          type: string
+        upvoteCount:
+          type: integer
+        commentCount:
+          type: integer
+        createdAt:
+          type: string
+          format: date-time
+        authorName:
+          type: string
+        authorAvatarColor:
+          type: string
+        hasUpvoted:
+          type: boolean
+        isOwnPost:
+          type: boolean
+
+    CommunityPostInput:
+      type: object
+      required: [category, title, body]
+      properties:
+        category:
+          $ref: "#/components/schemas/CommunityCategory"
+        title:
+          type: string
+          minLength: 3
+          maxLength: 200
+        body:
+          type: string
+          minLength: 1
+          maxLength: 5000
+
+    CommunityComment:
+      type: object
+      required:
+        - id
+        - postId
+        - body
+        - upvoteCount
+        - createdAt
+        - authorName
+        - authorAvatarColor
+        - hasUpvoted
+        - isOwnComment
+      properties:
+        id:
+          type: integer
+        postId:
+          type: integer
+        body:
+          type: string
+        upvoteCount:
+          type: integer
+        createdAt:
+          type: string
+          format: date-time
+        authorName:
+          type: string
+        authorAvatarColor:
+          type: string
+        hasUpvoted:
+          type: boolean
+        isOwnComment:
+          type: boolean
+
+    CommunityCommentInput:
+      type: object
+      required: [body]
+      properties:
+        body:
+          type: string
+          minLength: 1
+          maxLength: 2000

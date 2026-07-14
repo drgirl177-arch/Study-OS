@@ -7,7 +7,8 @@ export const videosTable = pgTable("videos", {
   youtubeId: text("youtube_id").notNull().unique(),
   title: text("title").notNull(),
   channel: text("channel").notNull(),
-  category: text("category").notNull(),
+  // Exam category — only meaningful for 'educational' videos; null for motivation/music.
+  category: text("category"),
   // 'educational' (Learn), 'motivation' (Motivation & Inspiration), 'music' (Study Music)
   type: text("type").notNull().default("educational"),
   durationSeconds: integer("duration_seconds").notNull(),

@@ -13,6 +13,9 @@ import materialsRouter from "./materials";
 import workspaceLayoutRouter from "./workspaceLayout";
 import aiRouter from "./ai";
 import achievementsRouter from "./achievements";
+import feedbackRouter from "./feedback";
+import analyticsRouter from "./analytics";
+import communityRouter from "./community";
 
 const router: IRouter = Router();
 
@@ -30,5 +33,8 @@ router.use(materialsRouter);
 router.use(workspaceLayoutRouter);
 router.use(aiRouter);
 router.use(achievementsRouter);
+router.use(feedbackRouter);
+router.use(analyticsRouter);
+router.use(communityRouter);
 
 export default router;

@@ -24,7 +24,9 @@ import { requireAuth, type AuthedRequest } from "../middlewares/requireAuth";
 
 const router: IRouter = Router();
 
-router.get("/materials", requireAuth, async (req, res): Promise<void> => {
+// Public — guests can browse study materials before signing up. Bookmarks
+// and highlights (personal, per-user) still require auth.
+router.get("/materials", async (req, res): Promise<void> => {
   const category = typeof req.query.category === "string" ? req.query.category : undefined;
   const search = typeof req.query.search === "string" ? req.query.search : undefined;
 
@@ -40,7 +42,7 @@ router.get("/materials", requireAuth, async (req, res): Promise<void> => {
   res.json(ListMaterialsResponse.parse(rows));
 });
 
-router.get("/materials/:id", requireAuth, async (req, res): Promise<void> => {
+router.get("/materials/:id", async (req, res): Promise<void> => {
   const params = GetMaterialParams.safeParse(req.params);
   if (!params.success) {
     res.status(400).json({ error: params.error.message });
